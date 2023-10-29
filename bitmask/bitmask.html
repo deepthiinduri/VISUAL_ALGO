@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>BITMASK</title>
+    <link rel="icon" href="/Images/VISUAL-ALGO.png" type="image/x-icon">
+    <link rel="stylesheet" href="bitmaskcss.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="/css/common-1.0.0.css">
+    <link rel="stylesheet" href="/css/viz-1.0.3.css">
+    <link rel="stylesheet" href="/css/visual.css">
+    <link rel="stylesheet" href="/css/drawgraph-1.0.0.css">
+
+<style>
+#viz {
+  width: 1000px;
+  height: 600px;
+  margin: 0px auto;
+  position: relative;
+  font-family: "PT Sans";
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.bit {
+  width: 32px;
+  height: 32px;
+  font-family: "PT Sans";
+  font-size: 20px;
+  font-weight: bold;
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.viz-text {
+  position: absolute;
+  width: 80px;
+  text-align: left;
+  color: #bbb;
+}
+#op-text {
+  color: black;
+  text-align: right;
+}
+#indices { top: 69px; width: 100px; }
+#S-text { top: 104px; width: 100px; }
+#j-text { top: 139px; width: 100px; }
+#result-text { top: 190px; width: 100px; }
+
+#divider {
+  height: 3px;
+  background: black;
+  position: absolute;
+}
+</style>
+</head>
+<body>
+<div id="body-container" style="display: flex; flex-direction: column; min-height: 100vh;">
+<nav id="topbar">
+<span style="margin-right: 0.25rem">
+  <a href = "/index.html"><span style="font-family: 'Poppins', sans-serif;color: white; font-family: monospace;text-shadow: 0.5px 0.5px #26A69A; font-size: 18px;">VISUAL ALGO</span></a>
+</span>
+<span>
+  <a href = "/visualize.html"><span style="font-family: 'Poppins', sans-serif;color: white; font-family: monospace; font-size: 15px;">&nbsp;&nbsp;&nbsp;Visualize</span></a>
+</span>
+<span style="max-height: 30px">
+<span id="title">
+<a id='title-bitmask' class='selected-viz'>Bitmask (Bit Manipulation)</a>
+</span>
+</span>
+<span style="max-height: 30px; background-color:rgb(0,0,0)!important; color: white; margin-left: auto">
+</span>
+</nav>
+<div id="dark-overlay"></div>
+<div id="main-content-container" style="flex: 1">
+
+<div id="mobile-playback-overlay" class="playing" style="display: none;">
+<span id="mobile-playback-rewind-label" class="mobile-playback-label">-7</span>
+<span id="mobile-playback-rewind" class="mobile-playback-item" onclick=mobilePlaybackRewind()><img src="/Images/prevFrame.png" alt="rewind 7 frames"></span>
+<span id="mobile-playback-pause" class="mobile-playback-item" onclick=mobilePlaybackPauseOrPlay()><img src="/Images/pause.png" alt="pause"></span>
+<span id="mobile-playback-play" class="mobile-playback-item" style="display: none;" onclick=mobilePlaybackPauseOrPlay()><img src="/Images/play.png" alt="play"></span>
+<span id="mobile-playback-forward" class="mobile-playback-item" onclick=mobilePlaybackForward()><img src="/Images/nextFrame.png" alt="forward 7 frames"></span>
+<span id="mobile-playback-forward-label" class="mobile-playback-label">+7</span>
+</div>
+<div id="status" class="panel"><p></p></div>
+<div id="status-hide" class="panel-hide"><img src="/Images/arrow_white_right.png" alt=">" title="show/hide status panel" /></div>
+<div id="codetrace" class="panel">
+<p id="code1" style="padding-top: 10px;"></p>
+<p id="code2"></p>
+<p id="code3"></p>
+<p id="code4"></p>
+<p id="code5"></p>
+<p id="code6"></p>
+<p id="code7" style="padding-bottom: 10px;"></p>
+</div>
+<div id="codetrace-hide" class="panel-hide"><img src="/Images/arrow_white_right.png" alt=">" title="show/hide codetrace panel" /></div>
+<div id="left-bar"></div>
+<div id="right-bar"></div>
+<div id="media-controls">
+<div id='speed-control'><div id='speed-input'></div><div id='viz-speed-value'>1x</div></div>
+<span id="go-to-beginning" class="media-control-button" title="go to beginning" onclick=goToBeginning()><img src="/Images/goToBeginning.png" alt="go to beginning"></span>
+<span id="previous" class="media-control-button" title="step backward" onclick=stepBackward()><img src="/Images/prevFrame.png" alt="previous frame"></span>
+<span id="pause" class="media-control-button" title="pause" onclick=pause()><img src="/Images/pause.png" alt="pause"></span>
+<span id="play" class="media-control-button" title="play" onclick=play()><img src="/Images/play.png" alt="play"></span>
+<span id="next" class="media-control-button" title="step forward" onclick=stepForward()><img src="/Images/nextFrame.png" alt="next frame"></span>
+<span id="go-to-end" class="media-control-button" title="go to end" onclick=goToEnd()><img src="/Images/goToEnd.png" alt="go to end"></span>
+<div id="progress-bar" class="media-control-button"></div>
+</div>
+<div id='viz'></div>
+<div id='current-action' class='panel'></div>
+</div>
+<div id="popup" hidden>
+<div id="popup-content"></div>
+<span id="hide-popup" hidden>X <u>Close</u></span>
+</div>
+<div id="rotateDeviceOverlay" style="display: none;">
+<div id="rotateDeviceText" style="font-size: 50px; font-weight: bold; text-align: center">Please rotate your device to landscape mode for a better experience</div>
+<div id="widenDeviceText" style="font-size: 50px; font-weight: bold; text-align: center">Please make the window wider for a better experience</div>
+</div>
+
+<style>
+        .setFlags {
+            bottom: 200px
+        }
+    </style>
+<style>
+        .set {
+            bottom: 173px
+        }
+    </style>
+<style>
+        .check {
+            bottom: 146px
+        }
+    </style>
+<style>
+        .clear {
+            bottom: 119px
+        }
+    </style>
+<style>
+        .toggle {
+            bottom: 92px
+        }
+    </style>
+<div id="actions" class="panel">
+<p id="setFlags">Set S</p>
+<p id="set">Set j-th Bit</p>
+<p id="check">Check j-th Bit</p>
+<p id="clear">Clear j-th Bit</p>
+<p id="toggle">Toggle j-th Bit</p>
+<p class="execAction" id="lsone" onClick="LSOne()">Least Significant Bit</p>
+</div>
+<div id="actions-hide" class="panel-hide"><span style="color:white; font-size: x-large; display: inline-block;">&gt;</span></div>
+<div id="actions-extras">
+<div class="setFlags action-menu-pullout">
+<div id="setFlags-input" class="new-menu-option">
+S = <input id="setS" type="text" autocomplete="off" value="75" style="width: 60px"> </div>
+<div id="setFlags-go" class="execAction new-menu-option coloured-menu-option" onClick="setFlags()">
+<p>Go</p>
+</div>
+<div id="setFlags-random" class="execAction new-menu-option coloured-menu-option" onClick="randomS()">
+<p>Random</p>
+</div>
+<div id="setFlags-random-po2" class="execAction new-menu-option coloured-menu-option" onClick="random_po2()">
+<p>Random 2^N</p>
+</div>
+<div id="setFlags-random-po2-min1" class="execAction new-menu-option coloured-menu-option" onClick="random_po2_min1()">
+<p>Random 2^N-1</p>
+</div>
+<div id="setFlags-err" class="err" style="float: left;"></div>
+</div>
+<div class="set action-menu-pullout">
+<div id="set-input" class="new-menu-option">
+j = <input id="set-j" type="text" autocomplete="off" value="3"> </div>
+<div id="set-go" class="execAction new-menu-option coloured-menu-option" onClick="set()">
+<p>Go</p>
+</div>
+<div id="set-err" class="err" style="float: left;"></div>
+</div>
+<div class="check action-menu-pullout">
+<div id="check-input" class="new-menu-option">
+j = <input id="check-j" type="text" autocomplete="off" value="3"> </div>
+<div id="check-go" class="execAction new-menu-option coloured-menu-option" onClick="check()">
+<p>Go</p>
+</div>
+<div id="check-err" class="err" style="float: left;"></div>
+</div>
+<div class="clear action-menu-pullout">
+<div id="clear-input" class="new-menu-option">
+j = <input id="clear-j" type="text" autocomplete="off" value="3"> </div>
+<div id="clear-go" class="execAction new-menu-option coloured-menu-option" onClick="clearBit()">
+<p>Go</p>
+</div>
+<div id="clear-err" class="err" style="float: left;"></div>
+</div>
+<div class="toggle action-menu-pullout">
+<div id="toggle-input" class="new-menu-option">
+j = <input id="toggle-j" type="text" autocomplete="off" value="3"> </div>
+<div id="toggle-go" class="execAction new-menu-option coloured-menu-option" onClick="toggle()">
+<p>Go</p>
+</div>
+<div id="toggle-err" class="err" style="float: left;"></div>
+</div>
+<div class="lsOne action-menu-pullout">
+<div id="lsOne-err" class="err" style="float: left;"></div>
+</div>
+</div>
+
+</div>
+<div id="bottom-bar">
+<a></a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="/js/d3-force-boundary.min.js"></script>
+<script>
+      $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': "cKVv69cCrwxQJuHbFlX8dRsv34i5wbN68R9qBvBA"
+        }
+      });
+
+      var colourArray = ["#52bc69", "#d65775", "#2ebbd1", "#d9513c", "#fec515", "#4b65ba", "#ff8a27", "#a7d41e"]; 
+
+      function disableScroll() { $('html').css('overflow', 'hidden'); }
+
+      function enableScroll() { $('html').css('overflow', 'visible'); }
+
+      function replaceAll(find, replace, str) { return str.replace(new RegExp(find, 'g'), replace); }
+
+      function getColours() {
+        var generatedColours = new Array();
+        while (generatedColours.length < 4) {
+          var n = (Math.floor(Math.random() * colourArray.length));
+          if ($.inArray(n, generatedColours) == -1)
+            generatedColours.push(n);
+        }
+        return generatedColours;
+      }
+
+      function isOn(value, position) {
+        return (value>>position) & 1 === 1;
+      }
+
+      function customAlert(msg) {
+        $('#custom-alert p').html(msg);
+        var m = -1 * ($('#custom-alert').outerHeight()/2);
+        $('#custom-alert').css('margin-top', m+'px');
+        $('#dark-overlay').fadeIn(function() {
+          $('#custom-alert').fadeIn(function() {
+            setTimeout(function() {
+              $('#custom-alert').fadeOut(function() {
+                $('#dark-overlay').fadeOut();
+              });
+            }, 1000);
+          });
+        });
+      }
+
+      function showLoadingScreen() {
+        $('#loading-overlay').show();
+        $('#loading-message').show();
+      }
+
+      function hideLoadingScreen() {
+        $('#loading-overlay').hide();
+      }
+
+      function commonAction(retval, msg) {
+        if (retval) {
+          $('#current-action').show();
+          $('#progress-bar').slider("option", "max", gw.getTotalIteration()-1);
+          triggerRightPanels();
+          isPlaying = true;
+        }
+      }
+
+      function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split('&');
+        for (var i = 0; i < vars.length; ++i) {
+          var pair = vars[i].split('=');
+          if (decodeURIComponent(pair[0]) == variable)
+            return decodeURIComponent(pair[1]);
+        }
+        return "";
+      }
+
+      const MOBILE_WIDTH = 1000;
+      const matchMediaMobile = window.matchMedia(`only screen and (max-width: ${MOBILE_WIDTH}px)`);
+      const matchMediaNarrow = window.matchMedia(`only screen and (max-width: 500px)`);
+      function isMobile() {
+        return matchMediaMobile.matches;
+      }
+      function isMobileOS() {
+        return /Mobi/i.test(navigator.userAgent) && !/ipad/i.test(navigator.userAgent);
+      }
+      let portraitMatcher = window.matchMedia("(orientation:portrait)");
+      function isPortrait() {
+        return portraitMatcher.matches;
+      }
+
+      var generatedColours = getColours();
+      var surpriseColour = colourArray[generatedColours[0]];
+      var colourTheSecond = colourArray[generatedColours[1]];
+      var colourTheThird = colourArray[generatedColours[2]];
+      var colourTheFourth = colourArray[generatedColours[3]];
+
+      $(function() {
+        $('.links').css('background', surpriseColour);
+        $('.colour').css("color", surpriseColour);
+        $('h4').css("background-color", surpriseColour);
+
+        $('#title a').click(function() {
+          $('#title a').removeClass('selected-viz');
+          $(this).addClass('selected-viz');
+        });
+      });
+
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+
+        $(function () {
+          $('#gdpr-accept').click(function () {
+            ga('create', 'UA-1566631-4', 'auto');
+            ga('send', 'pageview');
+            setCookie('use_google_analytics', 'true', 365)
+            $('#gdpr-popup').hide()
+          });
+          $('#gdpr-reject').click(function () {
+            setCookie('use_google_analytics', 'false', 365)
+            $('#gdpr-popup').hide()
+          });
+        });
+      
+      $('#gdpr-privacy-policy').click(function () {
+        if ($(window).width() > 600) {
+          $('#dark-overlay').fadeIn(function() {
+            $('#privacy-policy').fadeIn();
+          });
+        }
+        else
+          alert('Sorry, this dialog is too big. Please load it on bigger screen');
+      })
+    </script>
+
+<script src="/js/jquery-ui.min.js"></script>
+
+<script src="/js/d3.min.js"></script>
+<script src="/js/viz-1.0.6.js"></script>
+<script src="/js/graph_library-1.0.4.js"></script>
+<script>
+      $(function () {
+        let defaultPlaybackSpeed = 1;
+                createPlaybackSpeedSlider(defaultPlaybackSpeed);
+        $('#account-dropdown-btn').click(function (e) {
+          $('#account-dropdown-menu').css('display', 'block')
+          $('#language-dropdown-menu').css('display', 'none')
+          e.stopPropagation()
+        })
+        $(document).click(function (e) {
+          $('#account-dropdown-menu').css('display', 'none')
+        });
+        if (isMobile()) {
+          $("#status").css({
+            "bottom": "10%",
+            "height": "12%",
+            "max-height": "54px"
+          });
+          $("#current-action").css("bottom", "22%");
+          $('#status-hide').remove();
+          $('#left-bar').remove();
+          $('#right-bar').remove();
+          $("#mode-menu").remove();
+          $("#codetrace").css("z-index", 1);
+          $("#bottom-bar a").hide();
+          $("#bottom-bar").css("height", $("#topbar").css("height"));
+          $(".speed-dropup-btn").show();
+          $("#go-to-beginning").remove();
+          $("#go-to-end").remove();
+          $("#pause").remove();
+          $("#play").remove();
+          $("#previous").remove();
+          $("#next").remove();
+
+          $("#progress-bar").css({
+            left: "30%",
+            width: "60%",
+            'margin-left': 0
+          })
+        }
+      })
+      
+      let mobilePlaybackOverlayTimeout;
+      $(function() {
+        $("#viz").on("click", () => {
+          if (isMobile()) {
+            if ($("#mobile-playback-overlay").is(":hidden") && isPlaying) {
+              $("#mobile-playback-overlay").fadeIn();
+              hideMobilePlaybackOverlay(6000);
+            } else {
+              $("#mobile-playback-overlay").fadeOut();
+            }
+          }
+        });
+        $("#mobile-playback-overlay").on("click", (event) => {
+          if (event.target === event.currentTarget) 
+            $("#mobile-playback-overlay").fadeOut();
+          else
+            hideMobilePlaybackOverlay(5000);
+        })
+      });
+      function hideMobilePlaybackOverlay(timeOut) {
+        if (mobilePlaybackOverlayTimeout)
+          clearTimeout(mobilePlaybackOverlayTimeout);
+        mobilePlaybackOverlayTimeout = setTimeout(() => {
+            $("#mobile-playback-overlay").fadeOut();
+        }, timeOut);
+      }
+      function mobilePlaybackPauseOrPlay() { 
+        if ($("#mobile-playback-overlay").hasClass("playing")) {
+          pause();
+          hideMobilePlaybackOverlay(5000);
+        } else {
+          play();
+          hideMobilePlaybackOverlay(3000);
+        }
+      }
+      let rewindLabelTimeout, forwardLabelTimeout;
+      function mobilePlaybackRewind() {
+        $("#mobile-playback-rewind-label").css("opacity", 1);
+        if (rewindLabelTimeout)
+          clearTimeout(rewindLabelTimeout);
+        rewindLabelTimeout = setTimeout(() => {
+          $("#mobile-playback-rewind-label").css("opacity", 0);
+        }, 800);
+        stepBackward(7);
+      }
+      function mobilePlaybackForward() {
+        $("#mobile-playback-forward-label").css("opacity", 1);
+        if (forwardLabelTimeout)
+          clearTimeout(forwardLabelTimeout);
+        forwardLabelTimeout = setTimeout(() => {
+          $("#mobile-playback-forward-label").css("opacity", 0);
+        }, 800);
+        stepForward(7);
+      }
+
+      const sectorColors = ['#05a4d0', '#f1c706', '#fa0202'];
+      function setSlideTimelineColor(slideNo) {
+        const sectionNo = slideNo.split('-')[0];
+        $(`[slideNo="${slideNo}"]`).css('background', sectorColors[(parseInt(sectionNo) % 3)]);
+      }
+
+          function setF1SectorColor(sectorNum) {
+        $(`[sectorNo="${sectorNum}"]`).css('background', sectorColors[(parseInt(sectorNum) % 3)]);
+      }
+
+      function pushState(slideValue) {
+        var url = '/en/bitmask';
+        if (typeof slideValue != 'undefined' && slideValue != null) {
+          url += '?slide=' + slideValue;
+                  }
+        window.history.pushState({slide: slideValue}, "slide " + slideValue, url);
+      }
+
+      function showPopup(callback) {
+        $('#popup').fadeIn(100, callback);
+      }
+
+      function hidePopup(callback) {
+        $('#popup').fadeOut(100, callback);
+      }
+
+      function makeOverlayTransparent() {
+        $('#overlay').css('opacity', 0);
+      }
+
+      function hideSlide(callback) {
+        isPlaying = true;
+        closeSlide(cur_slide, function() {
+          makeOverlayTransparent();
+          setTimeout(callback, 700); 
+        });
+      }
+
+      function showSlide() {
+        isPlaying = false;
+        openSlide(cur_slide);
+        showOverlay();
+      }
+
+      function sectorBasedModeSelection() {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+        if (!Object.keys(params).length
+          && sector1Count === sectorLength && sector2Count === sectorLength && sector3Count === (numSlides - 2 * sectorLength)) {
+            hideOverlay();
+        }
+        else
+          $('#mode-menu a').click();
+      }
+
+      $(function() {
+        if (isMobileOS() && portraitMatcher.matches) {
+          $('#rotateDeviceOverlay').show();
+          $('#rotateDeviceText').show();
+          $('#widenDeviceText').hide();
+          $('#topbar').css("z-index", 10001);
+        } else if (matchMediaNarrow.matches) {
+          $('#rotateDeviceOverlay').show();
+          $('#rotateDeviceText').hide();
+          $('#widenDeviceText').show();
+          $('#topbar').css("z-index", 10001);
+        } else {
+          $('#rotateDeviceOverlay').hide();
+          $('#topbar').css("z-index", "");
+        }
+
+        matchMediaNarrow.addEventListener('change', e => {
+          if (e.matches) {
+            if ($('#rotateDeviceOverlay').is(":hidden")) {
+              $('#rotateDeviceOverlay').show();
+              $('#rotateDeviceText').hide();
+              $('#widenDeviceText').show();
+              $('#topbar').css("z-index", 10001);
+            }
+          } else {
+            $('#rotateDeviceOverlay').hide();
+            $('#topbar').css("z-index", "");
+          }
+        });
+        portraitMatcher.addEventListener('change', e => {
+          if (e.matches && isMobileOS()) {
+            if ($('#rotateDeviceOverlay').is(":hidden")) {
+              $('#rotateDeviceOverlay').show();
+              $('#rotateDeviceText').show();
+              $('#widenDeviceText').hide();
+              $('#topbar').css("z-index", 10001);
+            }
+          } else {
+            $('#rotateDeviceOverlay').hide();
+            $('#topbar').css("z-index", "");
+          }
+        });
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+        let slide = getUrlParameter('slide');
+        if (typeof slide !== undefined && slide != null) {
+          cur_slide = slide;
+        }
+        if (!Object.keys(params).length || params["slide"]) {
+          if (!isMobile()) {
+                            $('#mode-menu a').click();
+                      }
+        }
+        $('.mcq-submit').click(function() {
+          var questionId = parseInt($(this).attr('id').split('-')[1]);
+          var answer = $('#mcq-answer-' + questionId).val();
+          var userAnswer = $('input[type=radio][name=mcq-'+questionId+'-choice]:checked').val();
+
+          if (answer === userAnswer) {
+            $('#answer-status-' + questionId).html('<font color="green"><b>Correct!</b></font>');
+          }
+          else {
+            $('#answer-status-' + questionId).html('<font color="red"><b>Wrong Answer! Try again...</b></font>');
+          }
+          $('#answer-status-' + questionId).show();
+          setTimeout(function() {
+            $('#answer-status-' + questionId).fadeOut(1000);
+          }, 1000);
+        });
+
+        $('.msq-submit').click(function() {
+          var questionId = parseInt($(this).attr('id').split('-')[1]);
+          var answer = $('#msq-answer-' + questionId).val();
+
+          var answers = [];
+          $('input[type=checkbox][class=msq-choice]:checked').each(function() {
+            answers.push($(this).attr('id').split('-')[3]);
+          });
+          answers.sort();
+          var userAnswer = answers.join(',');
+
+          if (answer === userAnswer) {
+            $('#answer-status-' + questionId).html('<font color="green">Correct!</font>');
+          }
+          else {
+            $('#answer-status-' + questionId).html('<font color="red">Wrong Answer! Try again...</font>');
+          }
+          $('#answer-status-' + questionId).show();
+          setTimeout(function() {
+            $('#answer-status-' + questionId).fadeOut(1000);
+          }, 1000);
+        });
+      });
+
+      function POPUP_IMAGE(url) {
+        $('#popup-content').html('<img id="popup-image" src="' + url + '">');
+        adjustPopupToImageSize();
+      }
+
+      function URL(url) {
+        window.open(url, '_blank');
+      }
+
+      function CUSTOM_ACTION(action, data, mode) {}
+
+      $(document).ready(function () {
+        setTimeout(function () {
+          $('#change-lang-popup').fadeOut('slow')
+        }, 5000)
+      })
+    </script>
+<script type="text/javascript">
+    var extraCSS = {"lsone":"65px","toggle":"92px","clear":"119px","check":"146px","set":"173px","setFlags":"200px"};
+    var actionsIds = {"setFlags":{"p":"Set S"},"set":{"p":"Set j-th Bit"},"check":{"p":"Check j-th Bit"},"clear":{"p":"Clear j-th Bit"},"toggle":{"p":"Toggle j-th Bit"},"lsone":{"p":"Least Significant Bit","onClick":"LSOne()"}};
+    var isOpens = {};
+    var len = 6;
+    var keys = ["setFlags","set","check","clear","toggle","lsone"]; 
+    for (i = 0; i < len; i++) {
+        var actionDetails = keys[i];
+        isOpens[actionDetails] = false;
+    }
+    function openAction(id) {
+        hideThirdTiers(id);
+        $("." + id).css("bottom", extraCSS[id]);
+        if (!isOpens[id]) {
+            $('.' + id).fadeIn('fast');
+            isOpens[id] = true;
+        }
+    }
+    function closeAction(id) {
+        hideThirdTiers(id);
+        if (isOpens[id]) {
+            $('.' + id).fadeOut('fast');
+            $('#' + id + '-err').html("");
+            isOpens[id] = false;
+        }
+    }
+
+    function hideEntireActionsPanel() {
+                    closeAction('setFlags');
+                    closeAction('set');
+                    closeAction('check');
+                    closeAction('clear');
+                    closeAction('toggle');
+                    closeAction('lsone');
+                hideActionsPanel();
+    }
+
+    function hideThirdTiers(tier1Action) {
+        if ("parents" in actionsIds[tier1Action]) {
+            for (const secondTierAction of actionsIds[tier1Action]["parents"]) {
+                $('#' + secondTierAction + '-third-tier').fadeOut('fast');
+            }
+        }
+    }
+
+    function hideAllThirdTiers() {
+        for (const tier1Action in actionsIds) {
+            hideThirdTiers(tier1Action);
+        }
+    }
+
+    function toggleChildExtras(tier1, selectedParentTier2) {
+        hideThirdTiers(tier1);
+        var style = extraCSS[tier1];
+        $("." + tier1).css("bottom", (parseInt(style.substring(0, style.length - 2)) - 27));
+        $('#' + selectedParentTier2 + '-third-tier').fadeIn('fast');
+    }
+
+    function setActionHeightOriginal(tier1Action) {
+        $("." + tier1Action).css("bottom", extraCSS[tier1Action]);
+    }
+
+            $('#' + 'setFlags').click(function() {
+            openAction('setFlags');
+                                                                            closeAction('set');
+                                                                closeAction('check');
+                                                                closeAction('clear');
+                                                                closeAction('toggle');
+                                                                closeAction('lsone');
+                                    });
+            $('#' + 'set').click(function() {
+            openAction('set');
+                                                closeAction('setFlags');
+                                                                                            closeAction('check');
+                                                                closeAction('clear');
+                                                                closeAction('toggle');
+                                                                closeAction('lsone');
+                                    });
+            $('#' + 'check').click(function() {
+            openAction('check');
+                                                closeAction('setFlags');
+                                                                closeAction('set');
+                                                                                            closeAction('clear');
+                                                                closeAction('toggle');
+                                                                closeAction('lsone');
+                                    });
+            $('#' + 'clear').click(function() {
+            openAction('clear');
+                                                closeAction('setFlags');
+                                                                closeAction('set');
+                                                                closeAction('check');
+                                                                                            closeAction('toggle');
+                                                                closeAction('lsone');
+                                    });
+            $('#' + 'toggle').click(function() {
+            openAction('toggle');
+                                                closeAction('setFlags');
+                                                                closeAction('set');
+                                                                closeAction('check');
+                                                                closeAction('clear');
+                                                                                            closeAction('lsone');
+                                    });
+            $('#' + 'lsone').click(function() {
+            openAction('lsone');
+                                                closeAction('setFlags');
+                                                                closeAction('set');
+                                                                closeAction('check');
+                                                                closeAction('clear');
+                                                                closeAction('toggle');
+                                                                });
+    
+    $("[id*='-input']").on("keypress keydown keyup", (event) => {
+        event.stopPropagation();
+    });
+</script>
+<script type="text/javascript">
+
+var BitmaskWidget = function() {
+  var Bit = function(v, h) {
+    this.val = v;
+    this.highlight = h;
+  }
+
+  var STATUS = 3;
+  var LINE = 4;
+
+  var flags = 0;
+  var mask = 0;
+  var op = "";
+  var result = 0;
+
+  var statelist = new Array();
+  var transitionTime = 500;
+  var currentStep = 0;
+  var animInterval;
+  var issPlaying; 
+
+  this.init = function(flagsToSet) {
+    if (flagsToSet === undefined)
+      flags = 42; 
+    else
+      flags = parseInt(flagsToSet);
+    mask = 0;
+    result = this.calculateResult();
+
+    var basicState = this.createBasicState();
+    drawState(basicState);
+    $('#op-text').html("");
+    $('#result-text').html("");
+  };
+
+  this.toBinary = function(v) {
+    if (v >= 0)
+      return v.toString(2);
+    else {
+      v = (v<<1) >>> 1;
+      vStr = v.toString(2);
+      return vStr.substr(-this.getCurrentBinLength());
+    }
+  }
+
+  this.getCurrentBinLength = function() { return this.toBinary(flags).toString().length; }
+
+  this.calculateResult = function() {
+    switch (op) {
+      case "set"   : return flags | mask;
+      case "check" : return flags & mask;
+      case "toggle": return flags ^ mask; 
+      case "clear" : return flags & mask;
+      case "lsone" : return flags & mask;
+    }
+  }
+
+  this.getFlagsState = function() {
+    var flagsStr = this.toBinary(flags);
+    var flagsArr = new Array(); 
+    for (var i = 0; i < flagsStr.length; ++i) {
+      var newBit = new Bit(flagsStr.charAt(i), false);
+      flagsArr.push(newBit);
+    }
+    return flagsArr;
+  }
+
+  this.getMaskState = function() {
+    var maskStr = this.toBinary(mask); 
+    var maskArr = new Array(); 
+    for (var i = 0; i < maskStr.length; ++i) {
+      var newBit = new Bit(maskStr.charAt(i), false);
+      maskArr.push(newBit);
+    }
+    var padAmt = this.getCurrentBinLength() - maskStr.length 
+    for (var i = padAmt; i > 0; --i) {
+      maskArr.unshift(new Bit(0, false));
+    }
+    return maskArr;
+  }
+
+  this.getResultState = function() {
+    var resultStr = this.toBinary(result);
+    var resultArr = new Array(); 
+    for (var i = 0; i < resultStr.length; ++i) {
+      var newBit = new Bit(resultStr.charAt(i), false);
+      resultArr.push(newBit);
+    }
+    var padAmt = this.getCurrentBinLength() - resultStr.length
+    for (var i = padAmt; i > 0; --i)
+      resultArr.unshift(new Bit(0, false));
+    return resultArr;
+  }
+
+  this.createBasicState = function() {
+    var basicState = new Array();
+    basicState.push(this.getFlagsState()); 
+    basicState.push(this.getMaskState()); 
+    basicState.push(this.getResultState());
+    return basicState;
+  }
+
+  drawState = function(stateArr) {
+    $('#viz').html("");
+    var f = stateArr[0];
+    var m = stateArr[1];
+    var r = stateArr[2];
+    var length = f.length;
+    var totalwidth = length*32 + (length-1)*3;
+    var startx = (900-totalwidth) / 2;
+
+    for (var i = 0; i < length; ++i) {
+      var left = (startx-2 + (35*i));
+      var val = (length-i-1);
+      if (length-i-1 > 9)
+        val = String.fromCharCode(65+length-i-1-10);
+      var col = (f[i].highlight ? surpriseColour : "black");
+      var padding = (f[i].val == 1 ? "4px 13px" : "4px 11px");
+      $('#viz').append('<span class="bit" style="top: 65px; left:' + left + 'px; padding:' + padding + '; color:' + col + ';">' + val + '</span>');
+    }
+
+    for (var i = 0; i < length; ++i) {
+      var left = (startx + (35*i));
+      var val = (f[i].val == 1 ? "I" : "0");
+      var bgCol = (f[i].highlight ? surpriseColour : "#ddd");
+      var col = (f[i].highlight ? "white" : "black");
+      var padding = (f[i].val == 1 ? "4px 13px" : "4px 11px");
+      $('#viz').append('<span class="bit" style="top: 100px; left:' + left + 'px; background:' + bgCol + '; padding:' + padding + '; color:' + col + ';">' + val + '</span>');
+    }
+
+    for (var i = 0; i < length; ++i) {
+      var left = (startx + (35 * i));
+      var val = (m[i].val == 1 ? "I" : "0");
+      var bgCol = (m[i].highlight ? surpriseColour : "#ddd");
+      var col = (m[i].highlight ? "white" : "black");
+      var padding = (m[i].val == 1 ? "4px 13px" : "4px 11px");
+      $('#viz').append('<span class="bit" style="top: 135px; left:' + left + 'px; background:' + bgCol + '; padding:' + padding + '; color:' + col + ';">' + val + '</span>');
+    }
+
+    for (var i = 0; i < length; ++i) {
+      var left = (startx + (35 * i));
+      var val = (r[i].val == 1 ? "I" : "0");
+      var bgCol = (r[i].highlight ? surpriseColour : "#ddd");
+      var col = (r[i].highlight ? "white" : "black");
+      var padding = (r[i].val == 1 ? "4px 13px" : "4px 11px");
+      $('#viz').append('<span class="bit" style="top: 186px; left:' + left + 'px; background:' + bgCol + '; padding:' + padding + '; color:' + col + ';">' + val + '</span>');
+    }
+
+    var logicalOp = "";
+    var SText = "= S = " + flags;
+    var jText = "= mask"; 
+    var resultText = (stateArr[LINE] == (op == 'clear' ? 3 : 2) ? ("= " + result) : "");
+    switch (op) {
+      case "set"   : logicalOp = "OR" ; break;
+      case "check" : logicalOp = "AND"; break;
+      case "toggle": logicalOp = "XOR"; break;
+      case "clear" : logicalOp = "AND"; break;
+      case "lsone" : logicalOp = "AND"; resultText = '= Result'; break;
+    }
+    $('#viz').append('<span class="viz-text" id="op-text" style="top: 139px; left:' + (startx-90) + 'px;">' + logicalOp + '</span>');
+    $('#viz').append('<span class="viz-text" id="indices" style="left:' + (startx+totalwidth+20) + 'px; width: 200px;"> = indices</span>');
+    $('#viz').append('<span class="viz-text" id="S-text" style="left:' + (startx+totalwidth+20) + 'px; width: 200px;">' + SText + '</span>');
+    $('#viz').append('<span class="viz-text" id="j-text" style="left:' + (startx+totalwidth+20) + 'px; width: 200px;">' + jText + '</span>');
+    $('#viz').append('<span class="viz-text" id="result-text" style="left:' + (startx+totalwidth+20) + 'px; width: 200px;">' + resultText + '</span>');
+    $('#viz').append('<span id="divider" style="top: 175px; left:' + (startx-60) + 'px; width:' + (totalwidth+60) + 'px;"></span>');
+
+    $('#status p').html(stateArr[STATUS]);
+    highlightLine(stateArr[LINE]);
+  }
+
+  this.checkSetToggle = function(j, opp) {
+    if (j >= this.getCurrentBinLength()) {
+      $('#' + opp + '-err').html('You cannot {opp} a bit that is not within range!'.replace("{opp}", opp));
+      return false;
+    }
+    mask = 1;
+    op = opp;
+    result = this.calculateResult();
+
+    var basicState = this.createBasicState();
+    basicState[1][basicState[1].length-1].highlight = true;
+    basicState[STATUS] = 'Shift 1 to the left {j} times.'.replace("{j}", j);
+    basicState[LINE] = 1;
+    statelist.push(basicState);
+
+    for (var i = 2; i <= j; ++i) {
+      mask <<= 1;
+      result = this.calculateResult();
+    }
+
+    if (j > 0) {
+      mask <<= 1;
+      result = this.calculateResult();
+      basicState = this.createBasicState();
+    }
+
+    basicState[0][basicState[0].length-j-1].highlight = true;
+    basicState[1][basicState[1].length-j-1].highlight = true;
+    basicState[2][basicState[2].length-j-1].highlight = true;
+    var logicalOpp = "AND";
+    if (opp == "set")
+      logicalOpp = "OR";
+    else if (opp == "toggle")
+      logicalOpp = "XOR";
+    basicState[STATUS] = 'Result of {flags} {logicalOpp} (1&lt;&lt;{j}) = {flags} {logicalOpp} {mask} = {result}.'.replace("{flags}", flags).replace("{logicalOpp}", logicalOpp).replace("{j}", j).replace("{flags}", flags).replace("{logicalOpp}", logicalOpp).replace("{mask}", mask).replace("{result}", result);
+    basicState[LINE] = 2;
+    statelist.push(basicState);
+
+    populateCodetrace(opp);
+    this.play();
+    return true;
+  }
+
+  this.setFlags = function(f) {
+    f = parseInt(f);
+    var intRegex = /^\d+$/;
+    if (!intRegex.test(f)) {
+      $('#setFlags-err').html('Please enter an integer from 1 to 32767.');
+      return false;
+    }
+    else {
+      if (f > 32767) {
+        $('#setFlags-err').html('S exceeds the maximum value of 16-bit signed integer (2^15-1 or 32767).');
+        return false;
+      }
+      else {
+        flags = f;
+        mask = 0;
+        result = 0;
+
+        var basicState = this.createBasicState();
+        drawState(basicState);
+        $('#op-text').html("");
+        $('#result-text').html("");
+
+        populateCodetrace("setS");
+        return true;
+      }
+    }
+  }
+
+  this.clear = function(j) {
+    if (j >= this.getCurrentBinLength()) {
+      $('#clear-err').html('You cannot clear a bit that is not within range!');
+      return false;
+    }
+
+    mask = 1;
+    op = "clear";
+    result = this.calculateResult();
+    var basicState = this.createBasicState();
+    basicState[1][basicState[1].length-1].highlight = true;
+    basicState[STATUS] = 'Shift 1 to the left {j} times.'.replace("{j}", j);
+    basicState[LINE] = 1;
+    statelist.push(basicState);
+
+    for (var i = 2; i <= j; ++i) {
+      mask <<= 1;
+      result = this.calculateResult();
+    }
+
+    if (j > 0) {
+      mask <<= 1;
+      result = this.calculateResult();
+      basicState = this.createBasicState();
+      basicState[1][basicState[1].length-j-1].highlight = true;
+      basicState[STATUS] = 'Shift 1 to the left {j} times.'.replace("{j}", j);
+      basicState[LINE] = 1;
+      statelist.push(basicState);
+    }
+
+    mask = ~mask;
+    result = this.calculateResult();
+    basicState = this.createBasicState();
+    for (var i = 0; i < basicState[1].length; ++i)
+      basicState[1][i].highlight = true;
+    basicState[STATUS] = 'Inverted (1&lt;&lt;j) is {mask}.'.replace("{mask}", mask);
+    basicState[LINE] = 2;
+    statelist.push(basicState);
+
+    basicState = this.createBasicState();
+    basicState[0][basicState[0].length-j-1].highlight = true;
+    basicState[1][basicState[1].length-j-1].highlight = true;
+    basicState[2][basicState[2].length-j-1].highlight = true;
+    basicState[STATUS] = 'Result of {flags} {logicalOpp} (1&lt;&lt;{j}) = {flags} {logicalOpp} {mask} = {result}.'.replace("{flags}", flags).replace("{logicalOpp}", "AND ~").replace("{j}", j).replace("{flags}", flags).replace("{logicalOpp}", "AND").replace("{mask}", mask).replace("{result}", result);
+    basicState[LINE] = 3;
+    statelist.push(basicState);
+
+    populateCodetrace("clear");
+    this.play();
+    return true;
+  }
+
+  this.LSOne = function() {
+    op = "lsone";
+
+    mask = ~flags;
+    result = this.calculateResult();
+    var basicState = this.createBasicState();
+    for (var i = 0; i < basicState[1].length; ++i)
+      basicState[1][i].highlight = true;
+    basicState[STATUS] = 'Inverted (1&lt;&lt;j) is {mask}.'.replace("{mask}", mask);
+    basicState[LINE] = 1;
+    statelist.push(basicState);
+
+    mask = (~flags) + 1;
+    result = this.calculateResult();
+    basicState = this.createBasicState();
+    for (var i = 0; i < basicState[1].length; ++i)
+      basicState[1][i].highlight = true;
+    basicState[STATUS] = 'After +1, ' + 'mask is {mask}.'.replace("{mask}", mask);
+    basicState[LINE] = 1;
+    statelist.push(basicState);
+
+    basicState = this.createBasicState();
+    for (var i = basicState[2].length-1; i >= 0; --i) {
+      if (basicState[2][i].val == 0)
+        continue;
+      else {
+        basicState[2][i].highlight = true;
+        basicState[0][i].highlight = true;
+        basicState[STATUS] = 'Result of {flags} AND (-{flags}) = {result}<br>Thus bit no {j} (from the right) is the LSOne(S)'.replace('{flags}', flags).replace('{flags}', flags).replace('{result}', result).replace('{j}', Math.log(result)/Math.log(2));
+        basicState[LINE] = 2;
+        statelist.push(basicState);
+      }
+    }
+    populateCodetrace("lsone");
+    this.play();
+    return true;
+  }
+
+  drawCurrentState = function() {
+    $('#progress-bar').slider("value", currentStep);
+    drawState(statelist[currentStep]);
+    if (currentStep == (statelist.length-1)) {
+      pause();
+      $('#play img').attr('src', '/Images/replay.png').attr('alt', 'replay').attr('title', 'replay');
+    }
+    else
+      $('#play img').attr('src', '/Images/play.png').attr('alt', 'play').attr('title', 'play');
+  }
+
+  this.getAnimationDuration = function() { return transitionTime; }
+
+  this.setAnimationDuration = function(x) {
+    transitionTime = x;
+    if (issPlaying) {
+      clearInterval(animInterval);
+      animInterval = setInterval(function() {
+        drawCurrentState();
+        if (currentStep < (statelist.length-1))
+          currentStep++;
+        else
+          clearInterval(animInterval);
+      }, transitionTime);
+    }
+  }
+
+  this.getCurrentIteration = function() { return currentStep; }
+
+  this.getTotalIteration = function() { return statelist.length; }
+
+  this.forceNext = function() {
+    if ((currentStep+1) < (statelist.length))
+      ++currentStep;
+    drawCurrentState();
+  }
+
+  this.forcePrevious = function() {
+    if ((currentStep-1) >= 0)
+      --currentStep;
+    drawCurrentState();
+  }
+
+  this.jumpToIteration = function(n) {
+    currentStep = n;
+    if (currentStep > statelist.length-1)
+      currentStep = statelist.length-1;
+    if (currentStep < 0)
+      currentStep = 0;
+    drawCurrentState();
+  }
+
+  this.play = function() {
+    issPlaying = true;
+    drawCurrentState();
+    animInterval = setInterval(function() {
+      drawCurrentState();
+      if (currentStep < (statelist.length-1))
+        ++currentStep;
+      else
+        clearInterval(animInterval);
+    }, transitionTime);
+  }
+
+  this.pause = function() {
+    issPlaying = false;
+    clearInterval(animInterval);
+  }
+
+  this.replay = function() {
+    issPlaying = true;
+    currentStep = 0;
+    drawCurrentState();
+    animInterval = setInterval(function() {
+      drawCurrentState();
+      if (currentStep < (statelist.length-1))
+        currentStep++;
+      else
+        clearInterval(animInterval);
+    }, transitionTime);
+  }
+
+  this.stop = function() {
+    issPlaying = false;
+    statelist = new Array();
+    currentStep = 0;
+  }
+
+  function populateCodetrace(n) {
+    $('#code3').html('&nbsp');
+    $('#code4').html('&nbsp');
+    $('#code5').html('&nbsp');
+    $('#code6').html('&nbsp');
+    $('#code7').html('// <b><a href="https://github.com/deepthiinduri/cpbook-code/tree/master/ch2/lineards" target="_blank">bit_manipulation.cpp/py/java/ml</a></b>');
+    switch (n) {
+      case "setS":
+        $('#code1').html('Update S');
+        $('#code2').html('&nbsp;');
+        break;
+      case "set":
+        $('#code1').html('perform (1&lt;&lt;j)');
+        $('#code2').html("result = S OR (1&lt;&lt;j)");
+        break;
+      case "check":
+        $('#code1').html('perform (1&lt;&lt;j)');
+        $('#code2').html("result = S AND (1&lt;&lt;j)");
+        break;
+      case "toggle":
+        $('#code1').html('perform (1&lt;&lt;j)');
+        $('#code2').html("result = S XOR (1&lt;&lt;j)");
+        break;
+      case "clear":
+        $('#code1').html('perform (1&lt;&lt;j)');
+        $('#code2').html('invert (1&lt;&lt;j) using bitwise NOT (~)');
+        $('#code3').html("result = S AND ~(1&lt;&lt;j)");
+        break;
+      case "lsone":
+        $('#code1').html('mask = NOT(S)+1 // -S in two\'s complement');
+        $('#code2').html('result = S AND mask');
+        break;
+    }
+  }
+}
+
+var actionsWidth = 150;
+var statusCodetraceWidth = 350;
+
+var gw;
+var curS, curSlen;
+
+$(function() {
+  $('#play').hide();
+  gw = new BitmaskWidget();
+  gw.init();
+  var flags = getQueryVariable("s");
+  curS = Math.floor(Math.random()*1024); 
+  curSlen = Math.floor(Math.log(curS)/Math.log(2));
+  if (flags.length > 0)
+    gw.init(flags);
+  else
+    gw.init(curS);
+  var mode = getQueryVariable("mode");
+  var bit = getQueryVariable("bit");
+
+  switch (mode) {
+    case "OR":
+      $('#set').click();
+      $('#set-j').val(bit);
+      break;
+    case "AND":
+      $('#check').click();
+      $('#check-j').val(bit);
+      break;
+    case "XOR":
+      $('#toggle').click();
+      $('#toggle-j').val(bit);
+      break;
+    default:
+      $("#setS").val(Math.floor(Math.random()*32767));
+      $("#set-j").val(Math.floor(Math.random()*curSlen));
+      $("#check-j").val(Math.floor(Math.random()*curSlen));
+      $("#toggle-j").val(Math.floor(Math.random()*curSlen));
+      $("#clear-j").val(Math.floor(Math.random()*curSlen));
+      break;
+  }
+});
+
+function setFlags() {
+  if (isPlaying) stop();
+  curS = $('#setS').val();
+  curSlen = Math.floor(Math.log(curS)/Math.log(2));
+  commonAction(gw.setFlags(curS), 'Set S to {S}'.replace("{S}", curS));
+  setTimeout(function() {
+    $("#setS").val(Math.floor(Math.random()*32767));
+  }, 500);
+}
+
+function randomS() {
+  $("#setS").val(Math.floor(Math.random()*32767)); 
+  setFlags();
+}
+
+function random_po2() {
+  N = Math.floor(Math.random()*16); 
+  $("#setS").val(1<<N); 
+  setFlags();
+}
+
+function random_po2_min1() {
+  N = Math.floor(Math.random()*16);
+  $("#setS").val((1<<N)-1); 
+  setFlags();
+}
+
+function set() {
+  if (isPlaying) stop();
+  var j = $('#set-j').val();
+  commonAction(gw.checkSetToggle(j, "set"), 'Set bit {j}'.replace("{j}", j));
+  setTimeout(function() {
+    $("#set-j").val(1 + Math.floor(Math.random()*curSlen)); 
+  }, 500);
+}
+
+function check() {
+  if (isPlaying) stop();
+  var j = $('#check-j').val();
+  commonAction(gw.checkSetToggle(j, "check"), 'Check bit {j}'.replace("{j}", j));
+  setTimeout(function() {
+    $("#check-j").val(1 + Math.floor(Math.random()*curSlen));
+  }, 500);
+}
+
+function clearBit() {
+  if (isPlaying) stop();
+  var j = $('#clear-j').val();
+  commonAction(gw.clear(j), 'Clear bit {j}'.replace("{j}", j));
+  setTimeout(function() {
+    $("#clear-j").val(1 + Math.floor(Math.random()*curSlen));
+  }, 500);
+}
+
+function toggle() {
+  if (isPlaying) stop();
+  var j = $('#toggle-j').val();
+  commonAction(gw.checkSetToggle(j, "toggle"), 'Toggle bit {j}'.replace("{j}", j));
+  setTimeout(function() {
+    $("#toggle-j").val(1 + Math.floor(Math.random()*curSlen));
+  }, 500);
+}
+
+function LSOne() {
+  if (isPlaying) stop();
+  commonAction(gw.LSOne(), 'Find the Least Significant Bit of S');
+}
+</script>
+</body>
+</html>
