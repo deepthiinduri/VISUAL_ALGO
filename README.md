@@ -8,6 +8,8 @@ Visual Algo is a web-based application designed to provide an interactive learni
   <img src="https://github.com/deepthiinduri/VISUAL_ALGO/blob/main/Images/VISUAL%20ALGO%20PNG.png" alt="Project Icon" width="200" height="200">
 </p>
 
+Reference and a clone of - https://visualgo.net/en
+
 
 ## Features
 
