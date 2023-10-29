@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>CODE EDITOR</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/Images/VISUAL-ALGO.png" type="image/x-icon">
+    <link rel="stylesheet" href="codeeditorcss.css" />
+  </head>
+
+  <body>
+    <div id="body-container" style="display: flex; flex-direction: column;">
+        <nav>
+          <div class="logo">
+              <a id="home" href="/index.html" style="text-decoration: none;"><img src="/Images/VISUAL-ALGO.png" alt="logo"></a>
+              VISUAL ALGO
+          </div>
+           <input type="checkbox" id="click">
+            <label for="click" class="menu-btn">
+            <i class="fas fa-bars"></i>
+            </label>
+          <ul>
+              <li><a href="/index.html">Home</a></li>
+              <li><a href="/visualize.html">Visualize</a></li>
+              <li><a href="/codeeditor/codeeditor.html">Code Editor</a></li>
+          </ul>
+        </nav>
+    </div>
+    <textarea id="html" placeholder="HTML"></textarea>
+    <textarea id="css" placeholder="CSS"></textarea>
+    <textarea id="js" placeholder="JavaScript"></textarea>
+    <iframe id="code"></iframe>
+
+    <script type="text/javascript" src="codeeditorjs.js"></script>
+  </body>
+</html>
