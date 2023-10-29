@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>BST</title>
+        <link rel="icon" href="/Images/VISUAL-ALGO.png" type="image/x-icon">
+        <link rel="stylesheet" href="binarytreecss.css" />
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/css/stylesheet.css">
+        <link rel="stylesheet" type="text/css" href="/css/common-1.0.0.css">
+        <link rel="stylesheet" href="/css/viz-1.0.3.css">
+        <link rel="stylesheet" href="/css/visual.css">
+        <link rel="stylesheet" href="/css/drawgraph-1.0.0.css">
+    </head>
+    <body>
+        <div id="body-container" style="display: flex; flex-direction: column; min-height: 100vh;">
+            <nav id="topbar">
+            <span style="margin-right: 0.25rem">
+                <a href = "/index.html"><span style="font-family: 'Poppins', sans-serif;color: white; font-family: monospace;text-shadow: 0.5px 0.5px #26A69A; font-size: 18px;">VISUAL ALGO
+            </span>
+                </a>
+                <span>
+                    <a href = "/visualize.html"><span style="font-family: 'Poppins', sans-serif;color: white; font-family: monospace; font-size: 15px;">&nbsp;&nbsp;&nbsp;Visualize</span></a>
+                </span>
+            <span id="title">
+                <a class='selected-viz'>BINARY SEARCH TREE</a>
+                </span>
+                <span style="max-height: 30px; background-color:rgb(0,0,0)!important; color: white; margin-left: auto">
+                </span>
+            </nav>
+
+            <div id="dark-overlay"></div>
+            <div id="main-content-container" style="flex: 1">
+
+            <div id="mobile-playback-overlay" class="playing" style="display: none;">
+            </div>
+            <div id="status" class="panel"><p></p></div>
+            <div id="status-hide" class="panel-hide"><img src="/Images/arrow_white_right.png" alt=">" title="show/hide status panel" /></div>
+            <div id="codetrace" class="panel">
+            <p style="padding-top: 10px;"></p>
+            <p style="padding-bottom: 10px;"></p>
+            </div>
+            <div id="codetrace-hide" class="panel-hide"><img src="/Images/arrow_white_right.png" alt=">" title="show/hide codetrace panel" /></div>
+            <div id="left-bar"></div>
+            <div id="right-bar"></div>
+            <div id='viz'></div>
+            <div id='current-action' class='panel'></div>
+
+            <style>
+                    .create {
+                        bottom: 92px
+                    }
+                </style>
+            <style>
+                    .refresh {
+                        bottom: 65px
+                    }
+                </style>
+            <div id="actions" class="panel">
+            <p id="create">Create</p>
+            <p id="refresh" onClick="refresh();">Refresh</p>
+            </div>
+            <div id="actions-hide" class="panel-hide"><span style="color:white; font-size: x-large; display: inline-block;">&gt;</span></div>
+            <div class="box graph" id="tree"></div>
+
+            <div id="actions-extras">
+            <div class="create action-menu-pullout">
+            <div id="create-input" class="new-menu-option">
+            Elements = <input style="width: 180px;" oninput="action()" id="inp" autocomplete="off" placeholder="Ex:- 8 3 9 1 2 5 6 -1"> </div>
+            </div>
+            </div>
+
+            </div>
+            <div id="bottom-bar">
+            <a></a>
+            </div>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+            <script src="/js/d3-force-boundary.min.js"></script>
+            <script>
+                var colourArray = ["#52bc69", "#d65775", "#2ebbd1", "#d9513c", "#fec515", "#4b65ba", "#ff8a27", "#a7d41e"];
+
+                function getColours() {
+                    var generatedColours = new Array();
+                    while (generatedColours.length < 4) {
+                    var n = (Math.floor(Math.random() * colourArray.length));
+                    if ($.inArray(n, generatedColours) == -1)
+                        generatedColours.push(n);
+                    }
+                    return generatedColours;
+                }
+
+                function isOn(value, position) {
+                    return (value>>position) & 1 === 1;
+                }
+
+                var generatedColours = getColours();
+                var surpriseColour = colourArray[generatedColours[0]];
+                var colourTheSecond = colourArray[generatedColours[1]];
+                var colourTheThird = colourArray[generatedColours[2]];
+                var colourTheFourth = colourArray[generatedColours[3]];
+
+                </script>
+
+            <script src="/js/jquery-ui.min.js"></script>
+            <script src="/js/d3.min.js"></script>
+            <script src="/js/viz-1.0.6.js"></script>
+
+            <script type="text/javascript">
+                var extraCSS = {"refresh":"65px","create":"92px"};
+                var actionsIds = {"create":{"p":"create"},"refresh":{"p":"refresh"}};
+                var isOpens = {};
+                var len = 4;
+                var keys = ["create","refresh"]; 
+                for (i = 0; i < len; i++) {
+                    var actionDetails = keys[i];
+                    isOpens[actionDetails] = false;
+                }
+                function openAction(id) {
+                    hideThirdTiers(id);
+                    $("." + id).css("bottom", extraCSS[id]);
+                    if (!isOpens[id]) {
+                        $('.' + id).fadeIn('fast');
+                        isOpens[id] = true;
+                    }
+                }
+                function closeAction(id) {
+                    hideThirdTiers(id);
+                    if (isOpens[id]) {
+                        $('.' + id).fadeOut('fast');
+                        $('#' + id + '-err').html("");
+                        isOpens[id] = false;
+                    }
+                }
+
+                function hideEntireActionsPanel() {
+                                closeAction('create');
+                                closeAction('refresh');
+                            hideActionsPanel();
+                }
+
+                function hideThirdTiers(tier1Action) {
+                    if ("parents" in actionsIds[tier1Action]) {
+                        for (const secondTierAction of actionsIds[tier1Action]["parents"]) {
+                            $('#' + secondTierAction + '-third-tier').fadeOut('fast');
+                        }
+                    }
+                }
+
+                function setActionHeightOriginal(tier1Action) {
+                    $("." + tier1Action).css("bottom", extraCSS[tier1Action]);
+                }
+
+                $('#' + 'create').click(function() {
+                openAction('create');
+                closeAction('refresh');
+                });
+                $('#' + 'refresh').click(function() {
+                openAction('refresh');
+                closeAction('create');
+                });
+                
+                $("[id*='-input']").on("keypress keydown keyup", (event) => {
+                    event.stopPropagation();
+                });
+
+                var actionsWidth = 150;
+                var statusCodetraceWidth = 420;
+            </script>
+    </body>
+
+<script src="binarytreejs1.js"></script>
+<script src="binarytreejs2.js"></script>
+<script src="drawgraphjs.js"></script>
+<script src="/js/d3js.js"></script>
+</html>
